@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ninen/components/custom_elevated_btn.dart';
 import 'package:ninen/components/custom_progress_card.dart';
+import 'package:ninen/modules/progress/cubit/progress_cubit.dart';
 import 'package:ninen/modules/progress/pages/before_and_after_page.dart';
 import 'package:ninen/modules/progress/pages/chart_page.dart';
 import 'package:ninen/theme/app_colors.dart';
@@ -17,8 +19,9 @@ class _ProgressPageState extends State<ProgressPage> {
   bool weight = true;
   bool waist = false;
   bool biceps = false;
-  final beforeWeightCtl = TextEditingController();
-  final afterWeightCtl = TextEditingController();
+  final weightCtl = TextEditingController();
+  final waistCtl = TextEditingController();
+  final bicepsCtl = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +50,21 @@ class _ProgressPageState extends State<ProgressPage> {
                     style: AppTextStyles.styleF20WNormal(),
                   ),
                   ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      if (weightCtl.text.isNotEmpty &&
+                          waistCtl.text.isNotEmpty &&
+                          bicepsCtl.text.isNotEmpty) {
+                        context.read<ProgressCubit>().saveProgress(
+                              context,
+                              int.parse(weightCtl.text),
+                              int.parse(waistCtl.text),
+                              int.parse(bicepsCtl.text),
+                            );
+                        weightCtl.clear();
+                        waistCtl.clear();
+                        bicepsCtl.clear();
+                      }
+                    },
                     style: ElevatedButton.styleFrom(
                       minimumSize: const Size(70, 34),
                       backgroundColor: AppColors.red,
@@ -62,19 +79,19 @@ class _ProgressPageState extends State<ProgressPage> {
               ),
               const SizedBox(height: 20),
               CustomProgressCard(
-                controller: beforeWeightCtl,
+                controller: weightCtl,
                 title: 'Weight',
                 name: 'kg',
               ),
               const SizedBox(height: 12),
               CustomProgressCard(
-                controller: beforeWeightCtl,
+                controller: waistCtl,
                 title: 'Waist circumference',
                 name: 'cm',
               ),
               const SizedBox(height: 12),
               CustomProgressCard(
-                controller: beforeWeightCtl,
+                controller: bicepsCtl,
                 title: 'Biceps circumference',
                 name: 'cm',
               ),
@@ -128,13 +145,25 @@ class _ProgressPageState extends State<ProgressPage> {
                 ],
               ),
               const SizedBox(height: 26),
-              weight
-                  ? const LineChartSample2()
-                  : waist
-                      ? const LineChartSample2()
-                      : biceps
-                          ? const LineChartSample2()
-                          : const SizedBox(),
+              BlocBuilder<ProgressCubit, ProgressState>(
+                builder: (context, state) {
+                  return SizedBox(
+                    child: weight
+                        ? LineChartSample2(
+                            datas: state.weightList ?? [],
+                          )
+                        : waist
+                            ? LineChartSample2(
+                                datas: state.waistList ?? [],
+                              )
+                            : biceps
+                                ? LineChartSample2(
+                                    datas: state.bicepsList ?? [],
+                                  )
+                                : const SizedBox(),
+                  );
+                },
+              ),
             ],
           ),
         ),

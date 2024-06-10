@@ -4,7 +4,9 @@ import 'package:ninen/theme/app_colors.dart';
 import 'package:ninen/theme/app_text_styles.dart';
 
 class LineChartSample2 extends StatefulWidget {
-  const LineChartSample2({super.key});
+  const LineChartSample2({super.key, required this.datas});
+
+  final List<int> datas;
 
   @override
   State<LineChartSample2> createState() => _LineChartSample2State();
@@ -53,13 +55,13 @@ class _LineChartSample2State extends State<LineChartSample2> {
       case 1:
         text = Text('Feb', style: style);
         break;
-      case 5:
+      case 6:
         text = Text('Mar', style: style);
         break;
-      case 9:
+      case 12:
         text = Text('Apr', style: style);
         break;
-      case 13:
+      case 18:
         text = Text('May', style: style);
         break;
       default:
@@ -143,15 +145,17 @@ class _LineChartSample2State extends State<LineChartSample2> {
       ),
       borderData: FlBorderData(show: false),
       minX: 0,
-      maxX: 14,
+      maxX: 20,
       minY: 0,
       maxY: 70,
       lineBarsData: [
         LineChartBarData(
-          spots: const [
-            FlSpot(1, 30),
-            FlSpot(2, 40),
-          ],
+          spots: widget.datas
+              .asMap()
+              .entries
+              .map((entry) =>
+                  FlSpot(entry.key.toDouble(), entry.value.toDouble()))
+              .toList(),
           isCurved: true,
           barWidth: 2,
           isStrokeCapRound: true,
