@@ -4,9 +4,7 @@
 	<dict>
 		<!-- image -->
 		<key>NSPhotoLibraryUsageDescription</key>
-		<string>This app require access for Photo Library Usage</string>
-		<key>NSCameraUsageDescription</key>
-		<string>This app require access to the camera</string>
+		<string>The app requests access to a gallery to track your progress in workouts, etc.</string>
 		<!-- image -->
 		<key>CFBundleDevelopmentRegion</key>
 		<string>$(DEVELOPMENT_LANGUAGE)</string>

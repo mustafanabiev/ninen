@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ninen/modules/main/pages/main_page.dart';
 import 'package:ninen/models/onboarding_model.dart';
+import 'package:ninen/theme/app_colors.dart';
 
 class OnboardingPage extends StatefulWidget {
   const OnboardingPage({super.key});
@@ -12,6 +13,7 @@ class OnboardingPage extends StatefulWidget {
 class _OnboardingPageState extends State<OnboardingPage> {
   final pageController = PageController();
   int page = 0;
+  final int numberOfDots = 4;
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +22,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
     return Scaffold(
       body: PageView.builder(
         controller: pageController,
-        itemCount: onboardingList.length + 1,
+        itemCount: numberOfDots,
         onPageChanged: (value) {
           setState(() {
             page = value;
@@ -85,7 +87,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 38),
-                        selectPage(page),
+                        // selectPage(page),
+                        buildDotIndicator(page),
                       ],
                     ),
                   ),
@@ -193,43 +196,186 @@ class _OnboardingPageState extends State<OnboardingPage> {
     }
   }
 
-  Row selectPage(int page) {
+  Widget buildDotIndicator(int currentIndex) {
+    List<Widget> dots = [];
+    for (int i = 0; i < numberOfDots - 1; i++) {
+      dots.add(
+        Container(
+          margin: const EdgeInsets.symmetric(horizontal: 4.0),
+          width: 10,
+          height: 10,
+          decoration: BoxDecoration(
+            color: i == currentIndex ? AppColors.red : AppColors.grey,
+            shape: BoxShape.circle,
+          ),
+        ),
+      );
+    }
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        AnimatedContainer(
-          duration: const Duration(milliseconds: 300),
-          height: 10,
-          width: 10,
-          margin: const EdgeInsets.only(right: 0),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(50),
-            color: page == 0 ? const Color(0xffFF3225) : Colors.white,
-          ),
-        ),
-        const SizedBox(width: 19),
-        AnimatedContainer(
-          duration: const Duration(milliseconds: 300),
-          height: 10,
-          width: 10,
-          margin: const EdgeInsets.only(right: 0),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(50),
-            color: page == 1 ? const Color(0xffFF3225) : Colors.white,
-          ),
-        ),
-        const SizedBox(width: 19),
-        AnimatedContainer(
-          duration: const Duration(milliseconds: 300),
-          height: 10,
-          width: 10,
-          margin: const EdgeInsets.only(right: 0),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(50),
-            color: page == 2 ? const Color(0xffFF3225) : Colors.white,
-          ),
-        ),
-      ],
+      children: dots,
     );
   }
 }
+
+// import 'package:flutter/material.dart';
+// import 'package:ninen/modules/main/pages/main_page.dart';
+// import 'package:ninen/theme/app_colors.dart';
+
+// class OnboardingPageBuilderScreen extends StatefulWidget {
+//   const OnboardingPageBuilderScreen({super.key});
+
+//   @override
+//   State<OnboardingPageBuilderScreen> createState() =>
+//       _OnboardingPageBuilderScreenState();
+// }
+
+// class _OnboardingPageBuilderScreenState
+//     extends State<OnboardingPageBuilderScreen> {
+//   final PageController _pageController = PageController();
+//   int _currentPage = 0;
+//   final int numberOfDots = 3;
+
+//   @override
+//   void dispose() {
+//     _pageController.dispose();
+//     super.dispose();
+//   }
+
+//   void _onPageChanged(int index) {
+//     setState(() {
+//       _currentPage = index;
+//     });
+
+//     if (index == numberOfDots - 1) {
+//       WidgetsBinding.instance.addPostFrameCallback((_) {
+//         Navigator.pushAndRemoveUntil(
+//           context,
+//           MaterialPageRoute(
+//             builder: (context) => const MainPage(),
+//           ),
+//           (route) => false,
+//         );
+//       });
+//     }
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       backgroundColor: AppColors.white,
+//       body: Stack(
+//         children: [
+//           PageView.builder(
+//             controller: _pageController,
+//             onPageChanged: _onPageChanged,
+//             itemCount: numberOfDots,
+//             itemBuilder: (context, index) {
+//               if (index == 0) {
+//                 return const OnboardingOneScreen();
+//               } else if (index == 1) {
+//                 return const OnboardingSecondScreen();
+//               } else {
+//                 return Container();
+//               }
+//             },
+//           ),
+//           Positioned(
+//             bottom: 65,
+//             left: 0,
+//             right: 0,
+//             child: buildDotIndicator(_currentPage),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+
+//   Widget buildDotIndicator(int currentIndex) {
+//     List<Widget> dots = [];
+//     for (int i = 0; i < numberOfDots - 1; i++) {
+//       dots.add(
+//         Container(
+//           margin: const EdgeInsets.symmetric(horizontal: 4.0),
+//           width: 10,
+//           height: 10,
+//           decoration: BoxDecoration(
+//             color: i == currentIndex ? AppColors.red : AppColors.grey,
+//             shape: BoxShape.circle,
+//           ),
+//         ),
+//       );
+//     }
+//     return Row(
+//       mainAxisAlignment: MainAxisAlignment.center,
+//       children: dots,
+//     );
+//   }
+// }
+
+// class OnboardingOneScreen extends StatelessWidget {
+//   const OnboardingOneScreen({super.key});
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       backgroundColor: AppColors.white,
+//       body: SafeArea(
+//         child: Column(
+//           crossAxisAlignment: CrossAxisAlignment.center,
+//           children: [
+//             Image.asset(
+//               'assets/images/onboarding_11.png',
+//               fit: BoxFit.cover,
+//             ),
+//             SizedBox(height: 74),
+//             Text(
+//               'Split the bill in the app',
+//               textAlign: TextAlign.center,
+//               style: TextStyle(
+//                 color: Colors.black,
+//                 fontSize: 24,
+//                 fontFamily: 'Lexend',
+//                 fontWeight: FontWeight.w600,
+//               ),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+// class OnboardingSecondScreen extends StatelessWidget {
+//   const OnboardingSecondScreen({super.key});
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       backgroundColor: AppColors.white,
+//       body: SafeArea(
+//         child: Column(
+//           children: [
+//             Image.asset(
+//               'assets/images/onboarding_12.png',
+//               fit: BoxFit.cover,
+//             ),
+//             SizedBox(
+//               height: 44,
+//             ),
+//             Text(
+//               'View the history of split\nbills',
+//               textAlign: TextAlign.center,
+//               style: TextStyle(
+//                 color: Colors.black,
+//                 fontSize: 24,
+//                 fontFamily: 'Lexend',
+//                 fontWeight: FontWeight.w600,
+//               ),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }

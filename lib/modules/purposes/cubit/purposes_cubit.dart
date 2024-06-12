@@ -91,12 +91,11 @@ class PurposesCubit extends Cubit<PurposesState> {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.pushAndRemoveUntil(
+                Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => const PremiumPage(),
                   ),
-                  (route) => false,
                 );
               },
               child: const Text('OK'),

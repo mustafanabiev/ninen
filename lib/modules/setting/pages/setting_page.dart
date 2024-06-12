@@ -54,12 +54,11 @@ class SettingPage extends StatelessWidget {
                         width: double.infinity,
                         child: ElevatedButton(
                           onPressed: () {
-                            Navigator.pushAndRemoveUntil(
+                            Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => const PremiumPage(),
                               ),
-                              (route) => false,
                             );
                           },
                           style: ElevatedButton.styleFrom(

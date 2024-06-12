@@ -1,5 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:ninen/theme/app_colors.dart';
 import 'package:ninen/theme/app_text_styles.dart';
 
@@ -15,58 +16,82 @@ class LineChartSample2 extends StatefulWidget {
 class _LineChartSample2State extends State<LineChartSample2> {
   bool showAvg = false;
 
+  List<String> getLastFourMonths() {
+    DateTime now = DateTime.now();
+    DateFormat formatter = DateFormat('MMM');
+    List<String> months = [];
+    for (int i = 3; i >= 0; i--) {
+      DateTime date = DateTime(now.year, now.month - i, now.day);
+      months.add(formatter.format(date));
+    }
+    return months;
+  }
+
+  List<int?> padData(List<int> data) {
+    List<int?> paddedData = List<int?>.filled(4, null);
+    for (int i = 0; i < data.length && i < 4; i++) {
+      paddedData[i + (4 - data.length)] = data[i];
+    }
+    return paddedData;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: <Widget>[
-        AspectRatio(
-          aspectRatio: 2,
-          child: Padding(
-            padding: const EdgeInsets.only(right: 30),
-            child: LineChart(mainData()),
-          ),
-        ),
-        SizedBox(
-          width: 60,
-          height: 34,
-          child: TextButton(
-            onPressed: () {
-              setState(() {
-                showAvg = !showAvg;
-              });
-            },
+    List<int?> paddedData = padData(widget.datas);
+
+    return paddedData.isEmpty
+        ? Center(
             child: Text(
-              'avg',
-              style: TextStyle(
-                fontSize: 12,
-                color: showAvg ? Colors.white.withOpacity(0.5) : Colors.white,
-              ),
+              'No data available',
+              style: AppTextStyles.styleF14WNormal(),
             ),
-          ),
-        ),
-      ],
-    );
+          )
+        : Stack(
+            children: <Widget>[
+              AspectRatio(
+                aspectRatio: 2,
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 30),
+                  child: LineChart(mainData(paddedData)),
+                ),
+              ),
+              Positioned(
+                top: 10,
+                left: 10,
+                child: SizedBox(
+                  width: 60,
+                  height: 34,
+                  child: TextButton(
+                    onPressed: () {
+                      setState(() {
+                        showAvg = !showAvg;
+                      });
+                    },
+                    child: Text(
+                      'avg',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: showAvg
+                            ? Colors.white.withOpacity(0.5)
+                            : Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          );
   }
 
   Widget bottomTitleWidgets(double value, TitleMeta meta) {
     final style = AppTextStyles.styleF14WNormal();
+    List<String> months = getLastFourMonths();
+
     Widget text;
-    switch (value.toInt()) {
-      case 1:
-        text = Text('Feb', style: style);
-        break;
-      case 6:
-        text = Text('Mar', style: style);
-        break;
-      case 12:
-        text = Text('Apr', style: style);
-        break;
-      case 18:
-        text = Text('May', style: style);
-        break;
-      default:
-        text = Text('', style: style);
-        break;
+    if (value.toInt() >= 0 && value.toInt() < months.length) {
+      text = Text(months[value.toInt()], style: style);
+    } else {
+      text = Text('', style: style);
     }
 
     return SideTitleWidget(
@@ -76,42 +101,39 @@ class _LineChartSample2State extends State<LineChartSample2> {
   }
 
   Widget leftTitleWidgets(double value, TitleMeta meta) {
-    String text;
-    switch (value.toInt()) {
-      case 10:
-        text = '30';
-        break;
-      case 24:
-        text = '40';
-        break;
-      case 38:
-        text = '50';
-        break;
-      case 52:
-        text = '60';
-        break;
-      case 66:
-        text = '70';
-        break;
-      default:
-        return Container();
-    }
-
+    final style = AppTextStyles.styleF14WNormal();
     return Text(
-      text,
-      style: AppTextStyles.styleF14WNormal(),
+      value.toInt().toString(),
+      style: style,
       textAlign: TextAlign.left,
     );
   }
 
-  LineChartData mainData() {
+  LineChartData mainData(List<int?> paddedData) {
+    const double maxX = 3.0;
+    final double maxY = paddedData.where((element) => element != null).isEmpty
+        ? 10
+        : paddedData
+            .where((element) => element != null)
+            .reduce((a, b) => a! > b! ? a : b)!
+            .toDouble();
+
+    const double verticalInterval = 1;
+    final double horizontalInterval = maxY / 5 == 0 ? 1 : maxY / 5;
+
     return LineChartData(
       gridData: FlGridData(
-        show: false,
-        drawVerticalLine: false,
-        horizontalInterval: 10,
-        verticalInterval: 1,
+        show: true,
+        drawVerticalLine: true,
+        horizontalInterval: horizontalInterval,
+        verticalInterval: verticalInterval,
         getDrawingHorizontalLine: (value) {
+          return const FlLine(
+            color: AppColors.grey,
+            strokeWidth: 1,
+          );
+        },
+        getDrawingVerticalLine: (value) {
           return const FlLine(
             color: AppColors.grey,
             strokeWidth: 1,
@@ -130,31 +152,38 @@ class _LineChartSample2State extends State<LineChartSample2> {
           sideTitles: SideTitles(
             showTitles: true,
             reservedSize: 42,
-            interval: 1,
+            interval: 1, // Fixed interval for the last four months
             getTitlesWidget: bottomTitleWidgets,
           ),
         ),
         leftTitles: AxisTitles(
           sideTitles: SideTitles(
             showTitles: true,
-            interval: 1,
+            interval: horizontalInterval,
             getTitlesWidget: leftTitleWidgets,
             reservedSize: 42,
           ),
         ),
       ),
-      borderData: FlBorderData(show: false),
+      borderData: FlBorderData(
+        show: true,
+        border: Border.all(
+          color: AppColors.grey,
+          width: 1,
+        ),
+      ),
       minX: 0,
-      maxX: 20,
+      maxX: maxX,
       minY: 0,
-      maxY: 70,
+      maxY: maxY,
       lineBarsData: [
         LineChartBarData(
-          spots: widget.datas
+          spots: paddedData
               .asMap()
               .entries
-              .map((entry) =>
-                  FlSpot(entry.key.toDouble(), entry.value.toDouble()))
+              .map((entry) => entry.value != null
+                  ? FlSpot(entry.key.toDouble(), entry.value!.toDouble())
+                  : FlSpot(entry.key.toDouble(), 0))
               .toList(),
           isCurved: true,
           barWidth: 2,

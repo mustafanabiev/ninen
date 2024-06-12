@@ -116,12 +116,11 @@ class HomeCubit extends Cubit<HomeState> {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.pushAndRemoveUntil(
+                Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => const PremiumPage(),
                   ),
-                  (route) => false,
                 );
               },
               child: const Text('OK'),

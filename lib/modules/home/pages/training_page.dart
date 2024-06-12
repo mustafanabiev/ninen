@@ -92,11 +92,6 @@ class TrainingPage extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 16),
-              Text(
-                'Push-up',
-                style: AppTextStyles.styleF20WNormal(),
-              ),
-              const SizedBox(height: 8),
               ListView.builder(
                 padding: EdgeInsets.zero,
                 physics: const NeverScrollableScrollPhysics(),
@@ -107,6 +102,11 @@ class TrainingPage extends StatelessWidget {
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      Text(
+                        item.name,
+                        style: AppTextStyles.styleF20WNormal(),
+                      ),
+                      const SizedBox(height: 8),
                       Row(
                         children: [
                           CustomContainer(

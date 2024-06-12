@@ -17,7 +17,7 @@ class ProgressCubit extends Cubit<ProgressState> {
           bicepsList: [],
           waistList: [],
         )) {
-    _loadFromCache();
+    // _loadFromCache();
   }
 
   final ImagePicker picker;
@@ -64,7 +64,7 @@ class ProgressCubit extends Cubit<ProgressState> {
       waistList: waistList,
       bicepsList: bicepsList,
     ));
-    _saveProgressToCache(weightList, waistList, bicepsList);
+    // _saveProgressToCache(weightList, waistList, bicepsList);
   }
 
   void _showUpgradeDialog(BuildContext context) {
@@ -78,12 +78,11 @@ class ProgressCubit extends Cubit<ProgressState> {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.pushAndRemoveUntil(
+                Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => const PremiumPage(),
                   ),
-                  (route) => false,
                 );
               },
               child: const Text('OK'),
