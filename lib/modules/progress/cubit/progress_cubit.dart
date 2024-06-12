@@ -23,11 +23,6 @@ class ProgressCubit extends Cubit<ProgressState> {
 
   final ImagePicker picker;
 
-  Future<bool> _isPremiumUser() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getBool('isPremium') ?? false;
-  }
-
   void takePhoto(PhotoType type) async {
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
