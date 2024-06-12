@@ -21,10 +21,10 @@ class _LineChartSample2State extends State<LineChartSample2> {
     DateFormat formatter = DateFormat('MMM');
     List<String> months = [];
     for (int i = 3; i >= 0; i--) {
-      DateTime date = DateTime(now.year, now.month - i, now.day);
+      DateTime date = DateTime(now.year, now.month + i, now.day);
       months.add(formatter.format(date));
     }
-    return months;
+    return months.reversed.toList();
   }
 
   List<int?> padData(List<int> data) {
