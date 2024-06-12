@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:ninen/modules/home/cubit/home_cubit.dart';
-import 'package:ninen/modules/main/pages/main_page.dart';
 import 'package:ninen/theme/app_colors.dart';
 import 'package:ninen/theme/app_text_styles.dart';
 
@@ -40,7 +39,6 @@ class PremiumPage extends StatelessWidget {
             SvgPicture.asset(
               'assets/icons/premium.svg',
               width: size.width * 0.8,
-              // height: size.height * 0.5,
             ),
             const SizedBox(height: 36),
             Row(
@@ -84,13 +82,7 @@ class PremiumPage extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: () async {
                   context.read<HomeCubit>().savePremium(true);
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const MainPage(),
-                    ),
-                    (route) => false,
-                  );
+                  Navigator.pop(context);
                 },
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.all(12),

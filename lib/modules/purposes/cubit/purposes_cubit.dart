@@ -91,6 +91,7 @@ class PurposesCubit extends Cubit<PurposesState> {
           actions: [
             TextButton(
               onPressed: () {
+                Navigator.pop(context);
                 Navigator.push(
                   context,
                   MaterialPageRoute(

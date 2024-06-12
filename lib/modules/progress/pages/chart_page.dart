@@ -21,25 +21,15 @@ class _LineChartSample2State extends State<LineChartSample2> {
     DateFormat formatter = DateFormat('MMM');
     List<String> months = [];
     for (int i = 3; i >= 0; i--) {
-      DateTime date = DateTime(now.year, now.month + i, now.day);
+      DateTime date = DateTime(now.year, now.month - i, 1);
       months.add(formatter.format(date));
     }
-    return months.reversed.toList();
-  }
-
-  List<int?> padData(List<int> data) {
-    List<int?> paddedData = List<int?>.filled(4, null);
-    for (int i = 0; i < data.length && i < 4; i++) {
-      paddedData[i + (4 - data.length)] = data[i];
-    }
-    return paddedData;
+    return months;
   }
 
   @override
   Widget build(BuildContext context) {
-    List<int?> paddedData = padData(widget.datas);
-
-    return paddedData.isEmpty
+    return widget.datas.isEmpty
         ? Center(
             child: Text(
               'No data available',
@@ -52,7 +42,7 @@ class _LineChartSample2State extends State<LineChartSample2> {
                 aspectRatio: 2,
                 child: Padding(
                   padding: const EdgeInsets.only(right: 30),
-                  child: LineChart(mainData(paddedData)),
+                  child: LineChart(mainData(widget.datas)),
                 ),
               ),
               Positioned(
@@ -83,13 +73,12 @@ class _LineChartSample2State extends State<LineChartSample2> {
           );
   }
 
-  Widget bottomTitleWidgets(double value, TitleMeta meta) {
+  Widget bottomTitleWidgets(double value, TitleMeta meta, List<String> months) {
     final style = AppTextStyles.styleF14WNormal();
-    List<String> months = getLastFourMonths();
-
     Widget text;
-    if (value.toInt() >= 0 && value.toInt() < months.length) {
-      text = Text(months[value.toInt()], style: style);
+    int monthIndex = (value / 10).round();
+    if (monthIndex >= 0 && monthIndex < months.length) {
+      text = Text(months[monthIndex], style: style);
     } else {
       text = Text('', style: style);
     }
@@ -110,7 +99,7 @@ class _LineChartSample2State extends State<LineChartSample2> {
   }
 
   LineChartData mainData(List<int?> paddedData) {
-    const double maxX = 3.0;
+    const double maxX = 30.0;
     final double maxY = paddedData.where((element) => element != null).isEmpty
         ? 10
         : paddedData
@@ -120,6 +109,8 @@ class _LineChartSample2State extends State<LineChartSample2> {
 
     const double verticalInterval = 1;
     final double horizontalInterval = maxY / 5 == 0 ? 1 : maxY / 5;
+
+    List<String> months = getLastFourMonths();
 
     return LineChartData(
       gridData: FlGridData(
@@ -152,8 +143,9 @@ class _LineChartSample2State extends State<LineChartSample2> {
           sideTitles: SideTitles(
             showTitles: true,
             reservedSize: 42,
-            interval: 1, // Fixed interval for the last four months
-            getTitlesWidget: bottomTitleWidgets,
+            interval: 10, // Interval to match the x-axis range
+            getTitlesWidget: (value, meta) =>
+                bottomTitleWidgets(value, meta, months),
           ),
         ),
         leftTitles: AxisTitles(

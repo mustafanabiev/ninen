@@ -116,6 +116,7 @@ class HomeCubit extends Cubit<HomeState> {
           actions: [
             TextButton(
               onPressed: () {
+                Navigator.pop(context);
                 Navigator.push(
                   context,
                   MaterialPageRoute(

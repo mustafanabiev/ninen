@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:ninen/modules/home/cubit/home_cubit.dart';
 import 'package:ninen/modules/setting/pages/premium_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ninen/modules/progress/pages/before_and_after_page.dart';
@@ -17,14 +18,14 @@ class ProgressCubit extends Cubit<ProgressState> {
           bicepsList: [],
           waistList: [],
         )) {
-    // _loadFromCache();
+    _loadFromCache();
   }
 
   final ImagePicker picker;
 
   Future<bool> _isPremiumUser() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getBool('isPremium') ?? false; // Assume false if not set
+    return prefs.getBool('isPremium') ?? false;
   }
 
   void takePhoto(PhotoType type) async {
@@ -49,7 +50,7 @@ class ProgressCubit extends Cubit<ProgressState> {
     final bicepsList = List<int>.from(state.bicepsList ?? []);
 
     if (weightList.length >= 10) {
-      final isPremium = await _isPremiumUser();
+      final isPremium = context.read<HomeCubit>().state.premium ?? false;
       if (!isPremium) {
         _showUpgradeDialog(context);
         return;
@@ -64,20 +65,22 @@ class ProgressCubit extends Cubit<ProgressState> {
       waistList: waistList,
       bicepsList: bicepsList,
     ));
-    // _saveProgressToCache(weightList, waistList, bicepsList);
+    _saveProgressToCache(weightList, waistList, bicepsList);
   }
 
-  void _showUpgradeDialog(BuildContext context) {
-    showDialog(
+  Future<void> _showUpgradeDialog(BuildContext context) async {
+    await showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Upgrade to Premium'),
           content: const Text(
-              'You have reached the limit of 10 purposes. Upgrade to premium to add more.'),
+            'You have reached the limit of 10 purposes. Upgrade to premium to add more.',
+          ),
           actions: [
             TextButton(
               onPressed: () {
+                Navigator.pop(context);
                 Navigator.push(
                   context,
                   MaterialPageRoute(
