@@ -134,14 +134,16 @@ class TrainingPage extends StatelessWidget {
                   );
                 },
               ),
-              SizedBox(
-                width: double.infinity,
-                height: 169,
-                child: Image.file(
-                  newTrainingModel.image,
-                  fit: BoxFit.cover,
-                ),
-              ),
+              newTrainingModel.image != null
+                  ? SizedBox(
+                      width: double.infinity,
+                      height: 169,
+                      child: Image.file(
+                        newTrainingModel.image!,
+                        fit: BoxFit.cover,
+                      ),
+                    )
+                  : const SizedBox(),
               const SizedBox(height: 20),
               Text(
                 'Comment to training',

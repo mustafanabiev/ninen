@@ -72,8 +72,7 @@ class _NewTrainingPageState extends State<NewTrainingPage> {
                     final stateHome = context.read<HomeCubit>().state;
                     if (typeCtl.text.isNotEmpty &&
                         durationCtl.text.isNotEmpty &&
-                        commentCtl.text.isNotEmpty &&
-                        stateHome.image != null) {
+                        commentCtl.text.isNotEmpty) {
                       List<NewTrainingExerciseModel> exercises =
                           exerciseControllers.map((controllers) {
                         return NewTrainingExerciseModel(
@@ -96,9 +95,28 @@ class _NewTrainingPageState extends State<NewTrainingPage> {
                                   '${durationCtl.text} ${stateHome.durationNewTraining ?? 'mins'}',
                               newTrainingExerciseModel: exercises,
                               comment: commentCtl.text,
-                              image: stateHome.image!,
+                              image: stateHome.image,
                             ),
                           );
+                    } else {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          Future.delayed(const Duration(seconds: 1), () {
+                            Navigator.of(context).pop(true);
+                          });
+                          return const AlertDialog(
+                            title: Text(
+                              'Validation Error',
+                              textAlign: TextAlign.center,
+                            ),
+                            content: Text(
+                              'Please fill out all fields.',
+                              textAlign: TextAlign.center,
+                            ),
+                          );
+                        },
+                      );
                     }
                   },
                   style: ElevatedButton.styleFrom(
@@ -312,7 +330,7 @@ class _NewTrainingPageState extends State<NewTrainingPage> {
                     builder: (context, state) {
                       return GestureDetector(
                         onTap: () {
-                          context.read<HomeCubit>().takePhoto();
+                          context.read<HomeCubit>().takePhoto(context);
                         },
                         child: Container(
                           width: double.infinity,

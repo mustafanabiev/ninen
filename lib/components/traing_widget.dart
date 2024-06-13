@@ -6,12 +6,12 @@ import 'package:ninen/theme/app_text_styles.dart';
 class TraingWidget extends StatelessWidget {
   const TraingWidget({
     super.key,
-    required this.image,
+    this.image,
     required this.title,
     required this.date,
   });
 
-  final File image;
+  final File? image;
   final String title;
   final String date;
 
@@ -26,11 +26,18 @@ class TraingWidget extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: Image.file(
-                  image,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                ),
+                child: image != null
+                    ? Image.file(
+                        image!,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                      )
+                    : Container(
+                        width: double.infinity,
+                        height: double.infinity,
+                        color: const Color(0xffF1F1F1),
+                        child: const Center(child: Text('No photo')),
+                      ),
               ),
             ],
           ),

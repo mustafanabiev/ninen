@@ -8,7 +8,7 @@ class NewTrainingModel {
     required this.duration,
     required this.newTrainingExerciseModel,
     required this.comment,
-    required this.image,
+    this.image,
   });
 
   final String date;
@@ -17,7 +17,7 @@ class NewTrainingModel {
   final String duration;
   final List<NewTrainingExerciseModel> newTrainingExerciseModel;
   final String comment;
-  final File image;
+  final File? image;
 
   Map<String, dynamic> toJson() => {
         'date': date,
@@ -27,7 +27,7 @@ class NewTrainingModel {
         'newTrainingExerciseModel':
             newTrainingExerciseModel.map((e) => e.toJson()).toList(),
         'comment': comment,
-        'image': image.path,
+        'image': image?.path,
       };
 
   factory NewTrainingModel.fromJson(Map<String, dynamic> json) =>
@@ -41,7 +41,7 @@ class NewTrainingModel {
               .map((e) => NewTrainingExerciseModel.fromJson(e)),
         ),
         comment: json['comment'],
-        image: File(json['image']),
+        image: json['image'] != null ? File(json['image']) : null,
       );
 }
 

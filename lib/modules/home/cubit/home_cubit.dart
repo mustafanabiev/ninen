@@ -1,12 +1,14 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:ninen/constants/app_cache.dart';
 import 'package:ninen/modules/home/service/home_service.dart';
 import 'package:ninen/modules/setting/pages/premium_page.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ninen/models/new_training_model.dart';
 
@@ -57,13 +59,45 @@ class HomeCubit extends Cubit<HomeState> {
     emit(state.copyWith(durationNewTraining: duration));
   }
 
-  void takePhoto() async {
-    final pickedFile =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
-      emit(state.copyWith(image: File(pickedFile.path)));
+  Future<void> takePhoto(BuildContext context) async {
+    try {
+      XFile? pickedFile =
+          await ImagePicker().pickImage(source: ImageSource.gallery);
+      if (pickedFile != null) {
+        emit(state.copyWith(image: File(pickedFile.path)));
+      }
+    } catch (e) {
+      var status = await Permission.photos.status;
+      if (status.isDenied) {
+        // ignore: use_build_context_synchronously
+        showAlertDialog(context);
+      } else {
+        return;
+      }
     }
   }
+
+  void showAlertDialog(BuildContext context) => showCupertinoDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return CupertinoAlertDialog(
+            title: const Text('Permission Denied'),
+            content: const Text('Allow access to gallery and photos'),
+            actions: [
+              CupertinoDialogAction(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Cancel'),
+              ),
+              CupertinoDialogAction(
+                isDefaultAction: true,
+                onPressed: () => openAppSettings(),
+                child: const Text('Settings'),
+              ),
+            ],
+          );
+        },
+      );
 
   void clear() {
     final updatedTraining = List<NewTrainingModel>.from(state.newTraining);
